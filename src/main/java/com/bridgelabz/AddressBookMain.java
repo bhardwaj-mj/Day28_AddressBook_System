@@ -4,6 +4,7 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvException;
+import org.json.JSONArray;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -13,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,7 +23,7 @@ import java.util.stream.Collectors;
 
 public class AddressBookMain {
 
-    public static void main(String[] args) {
+    public static<JSONParser> void main(String[] args) {
         System.out.println("Welcome to Address Book program");
         Scanner scanner = new Scanner(System.in);
         HashMap<String, AddressBook> addressBookHashMap = new HashMap<>();
@@ -188,6 +190,32 @@ public class AddressBookMain {
                 System.out.print(value + "\t");
             System.out.println();
         });
+        JSONArray jsonPersons = new JSONArray();
+
+        addressBookHashMap.keySet().stream().forEach(bookname -> addressBookHashMap.get(bookname).getContacts()
+                .stream().forEach(contact -> jsonPersons.put(contact.getContactJSON())));
+
+        Path jsonPath = Paths.get("E:\\BridgeLabz\\RFP\\Day28AddressBookSystem\\src\\main\\java\\com\\bridgelabz\\AB.json");
+        try {
+            Files.deleteIfExists(jsonPath);
+            Files.writeString(jsonPath, jsonPersons.toJSONObject(), StandardOpenOption.CREATE);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        JSONParser jsonParser = new JSONParser();
+
+        System.out.println("\nReading data from JSON file:");
+        try {
+            Object object = jsonParser.parse(Files.newBufferedReader(jsonPath));
+            JSONArray personsList = (JSONArray) object;
+            System.out.println(personsList);
+        } catch (IOException | ParseException e) {
+
+            e.printStackTrace();
+        }
+
     }
 }
 
