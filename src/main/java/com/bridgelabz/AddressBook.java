@@ -41,6 +41,9 @@ public class AddressBook {
             System.out.println("Contact added");
         }
     }
+    public List<Contact> getContacts() {
+        return contactList;
+    }
 
     public void displayContact() {
         for (Contact contact : contactList) {
